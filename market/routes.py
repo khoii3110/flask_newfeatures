@@ -16,8 +16,10 @@ def home_page():
 def market_page():
     purchase_form = PurchaseItemForm()
     selling_form = SellItemForm()
+
+    # Handle purchase and sell actions as you already did
     if request.method == "POST":
-        #Purchase Item Logic
+        # Purchase Item Logic
         purchased_item = request.form.get('purchased_item')
         p_item_object = Item.query.filter_by(name=purchased_item).first()
         if p_item_object:
@@ -26,7 +28,8 @@ def market_page():
                 flash(f"Congratulations! You purchased {p_item_object.name} for {p_item_object.price}$", category='success')
             else:
                 flash(f"Unfortunately, you don't have enough money to purchase {p_item_object.name}!", category='danger')
-        #Sell Item Logic
+
+        # Sell Item Logic
         sold_item = request.form.get('sold_item')
         s_item_object = Item.query.filter_by(name=sold_item).first()
         if s_item_object:
@@ -36,13 +39,36 @@ def market_page():
             else:
                 flash(f"Something went wrong with selling {s_item_object.name}", category='danger')
 
-
         return redirect(url_for('market_page'))
 
     if request.method == "GET":
+        # Get filter parameters from request
+        search_query = request.args.get('search', '')
+        category = request.args.get('category', '')
+        min_price = request.args.get('min_price', type=int)
+        max_price = request.args.get('max_price', type=int)
+
+        # Start with the query for items that don't have an owner (i.e., available for purchase)
         items = Item.query.filter_by(owner=None)
+
+        # Apply filters if applicable
+        if search_query:
+            items = items.filter(Item.name.ilike(f'%{search_query}%'))
+        if category:
+            items = items.filter(Item.category == category)
+        if min_price is not None:
+            items = items.filter(Item.price >= min_price)
+        if max_price is not None:
+            items = items.filter(Item.price <= max_price)
+
+        items = items.all()  # Execute the query
+
+        # Get the current user's owned items
         owned_items = Item.query.filter_by(owner=current_user.id)
+
+        # Return the market page with the filtered items and the owned items
         return render_template('market.html', items=items, purchase_form=purchase_form, owned_items=owned_items, selling_form=selling_form)
+
 
 @app.route('/register', methods=['GET', 'POST'])
 def register_page():
