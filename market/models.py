@@ -60,3 +60,10 @@ class Item(db.Model):
         
     from market import db
 
+class Wishlist(db.Model):
+    id = db.Column(db.Integer(), primary_key=True)
+    user_id = db.Column(db.Integer(), db.ForeignKey('user.id'), nullable=False)
+    item_id = db.Column(db.Integer(), db.ForeignKey('item.id'), nullable=False)
+    # Establish relationship to User and Item for easier querying
+    user = db.relationship('User', backref='wishlist_items', lazy=True)
+    item = db.relationship('Item', lazy=True)

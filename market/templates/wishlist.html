@@ -1,0 +1,31 @@
+{% extends 'base.html' %} {% block title %}Wishlist{% endblock %} {% block
+content %}
+<div class="container">
+  <h2>Your Wishlist</h2>
+  <!-- Added black color to title -->
+
+  {% for item in items %}
+  <div class="card mb-3">
+    <h5 class="card-title" style="color: black">{{ item.name }}</h5>
+    <!-- Added black color to item name -->
+    <p class="card-text" style="color: black">{{ item.description }}</p>
+    <!-- Added black color to description -->
+    <p class="card-text" style="color: black">{{ item.price }}$</p>
+    <!-- Added black color to price -->
+
+    <form
+      action="{{ url_for('remove_from_wishlist', item_id=item.id) }}"
+      method="POST"
+    >
+      <button type="submit" class="btn btn-danger" style="color: black">
+        Remove from Wishlist
+      </button>
+      <!-- Set button text to black -->
+    </form>
+  </div>
+  {% else %}
+  <p style="color: black">Your wishlist is empty.</p>
+  <!-- Set empty message text to black -->
+  {% endfor %}
+</div>
+{% endblock %}

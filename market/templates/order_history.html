@@ -1,0 +1,9 @@
+<h2>Your Order History</h2>
+<ul>
+  {% for transaction in transactions %}
+  <li>
+    {{ transaction.purchase_date }} - {{ transaction.transaction_type|capitalize
+    }} - {{ transaction.item.name }} for {{ transaction.price }}$
+  </li>
+  {% endfor %}
+</ul>

@@ -133,6 +133,45 @@ def profile_page():
 
     return render_template('profile.html', form=form)
 
+from market.models import Wishlist
+
+@app.route('/wishlist')
+@login_required
+def wishlist_page():
+    wishlist_items = Wishlist.query.filter_by(user_id=current_user.id).all()
+    print(wishlist_items)  # Debugging line
+    items = [wishlist_item.item for wishlist_item in wishlist_items]
+    return render_template('wishlist.html', items=items)
+
+
+
+
+@app.route('/add_to_wishlist/<int:item_id>', methods=['POST'])
+@login_required
+def add_to_wishlist(item_id):
+    item = Item.query.get(item_id)
+    if item:
+        # Check if the item is already in the wishlist
+        if Wishlist.query.filter_by(user_id=current_user.id, item_id=item_id).first() is None:
+            wishlist_entry = Wishlist(user_id=current_user.id, item_id=item_id)
+            db.session.add(wishlist_entry)
+            db.session.commit()
+            flash(f'{item.name} added to your wishlist!', 'success')
+        else:
+            flash(f'{item.name} is already in your wishlist.', 'info')
+    return redirect(url_for('market_page'))
+
+
+@app.route('/remove_from_wishlist/<int:item_id>', methods=['POST'])
+@login_required
+def remove_from_wishlist(item_id):
+    wishlist_entry = Wishlist.query.filter_by(user_id=current_user.id, item_id=item_id).first()
+    if wishlist_entry:
+        db.session.delete(wishlist_entry)
+        db.session.commit()
+        flash(f'Item removed from wishlist.', 'info')
+    return redirect(url_for('wishlist_page'))  # Ensure redirect to wishlist page
+
 
 
 

@@ -71,6 +71,12 @@
           <li class="nav-item">
             <a class="nav-link" href="{{ url_for('profile_page') }}">Profile</a>
           </li>
+          <!-- Add Wishlist link here for authenticated users -->
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('wishlist_page') }}"
+              >Wishlist</a
+            >
+          </li>
         </ul>
         {% else %}
         <ul class="navbar-nav">
@@ -86,6 +92,8 @@
             <a class="nav-link" href="{{ url_for('profile_page') }}">Profile</a>
           </li>
         </ul>
+        <!-- Add to your navbar in base.html -->
+
         {% endif %}
       </div>
     </nav>
